@@ -10,8 +10,29 @@
 	<body>
 		<canvas id="grafica" width=512px height=512px>
 		<script>
-			var contexto = document.getElementById("grafica").getContext("2d");
+			var contexto = document.getElementById("grafica").getContext("2d");			
 			/* Salvador va a elaborar la parte crear la gráfica en plan de coordenadas, abscisas */
+			// Origen de los ejes
+			var origenX = grafica.width/2;
+			var origenY = grafica.height/2;
+			
+			contexto.lineWidth = 2;			
+			// Eje X
+			contexto.lineWidth = 2;
+			contexto.strokeStyle = "Red";
+			contexto.beginPath();
+			contexto.moveTo(0,origenY);
+			contexto.lineTo(grafica.width,origenY);
+			contexto.stroke();			
+			// Eje Y
+			contexto.lineWidth = 3;
+			contexto.strokeStyle = "Green";
+			contexto.beginPath();
+			contexto.moveTo(origenX,0);
+			contexto.lineTo(origenX,grafica.height);
+			contexto.stroke();
+			
+			
 			
 			/* Raul va a coger unos datos inventados y va a poblar esferitas sobre la gráfica en el canvas */
 			
