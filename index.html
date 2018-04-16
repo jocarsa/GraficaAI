@@ -63,21 +63,53 @@
 			
 			
 			/* Raul va a coger unos datos inventados y va a poblar esferitas sobre la gráfica en el canvas */
+			var datos = [
+				[230, 420],
+				[210, 410],
+				[200, 400],
+				[0, 100],
+				[20, 100],
+				[40, 100],
+				[50, 80],
+				[300, 600],
+				[260, 570],
+				[270, 620],
+				[260, 650],
+				[100, 150],
+				[110, 160],
+				[105, 170],
+				[104, 155],
+				[110, 155],
+				[70, 200]
+			];
 			
 			/* Gabri sobre esas esferitas dibuja unas esferas agrupadoras */
 			
 			var mibucle;
+			inicio();
 			
 			var listEsferasGrupales;
 			
 			inicio();
 			
 			function inicio(){
+<<<<<<< HEAD
 				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
+=======
+				contexto.beginPath();
+				for (var i = 0; i < datos.length; i++) {
+					contexto.arc(datos[i][0], datos[i][1], 5, 0, 2*Math.PI);
+					contexto.fillStyle = "black";
+					contexto.fill();
+					contexto.closePath();
+				}
+				
+>>>>>>> Raul
 				mibucle = setTimeout("bucle()",5000);
 			}
 			
 			function bucle(){
+<<<<<<< HEAD
 
 				//Esferas Grupales (Gabri)
 				for (var i=0; i<listEsferasGrupales.length; i++) {
@@ -93,6 +125,8 @@
 				}
 				
 
+=======
+>>>>>>> Raul
 				clearTimeout(mibucle);
 				mibucle = setTimeout("bucle()",5000);
 			}
