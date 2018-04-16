@@ -19,22 +19,25 @@
 			
 			var mibucle;
 			
-			function inicio(){
-				mibucle = setTimeout("bucle()",5000);
-				
-				var listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
-			}
-			function bucle(){
+			var listEsferasGrupales;
 			
+			inicio();
+			
+			function inicio(){
+				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
+				mibucle = setTimeout("bucle()",5000);
+			}
+			
+			function bucle(){
 				//Esferas Grupales (Gabri)
-				for (var i=0; i<listEsferasGrupales.lenght; i++) {
+				for (var i=0; i<listEsferasGrupales.length; i++) {
 					//Cogemos radio y posicion del punto
 					let posx = listEsferasGrupales[i][0];
 					let posy = listEsferasGrupales[i][1];
 					let radio = 20;
-					contexto.strokeStyle = "red";
+					contexto.strokeStyle = "orange";
 					contexto.beginPath();
-					contexto.arc(posx, posy, radio, 0, 2*Math.PI);
+					contexto.arc(posx, posy, radio, 0, 2*Math.PI, false);
 					contexto.stroke();
 					contexto.closePath();
 				}
