@@ -105,7 +105,11 @@
 				}
 				
 				/* Tirar una linea entre cada pareja de puntos que este a menos del umbral */
-
+				
+				for (var i = 0; i < parejas de puntos que estén a menos del umbral.lenght; i++){
+					dibujaLinea(puntomedio(punto1),puntomedio(punto2)); 
+				}
+					      //FALTA CAMBIAR OBJETOS POR LOS VALORES FINALES//
 				mibucle = setTimeout("bucle()",5000);
 			}
 			
@@ -129,6 +133,15 @@
 
 				clearTimeout(mibucle);
 				mibucle = setTimeout("bucle()",5000);
+			}
+			
+			function dibujaLinea(objeto1,objeto2){
+					
+					contexto.beginPath();
+					contexto.moveTo(objeto1, objeto2);
+					contexto.lineTo(objeto1, objeto2);
+					contexto.stroke();
+
 			}
 		</script>
 	</body>
