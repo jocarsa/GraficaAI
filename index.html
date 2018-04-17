@@ -39,7 +39,7 @@
 		<canvas id="grafica" width=512px height=512px>
 		<script>
 			var contexto = document.getElementById("grafica").getContext("2d");			
-			/* Salvador va a elaborar la parte crear la gráfica en plan de coordenadas, abscisas */
+			
 			// Origen de los ejes
 			var origenX = grafica.width/2;
 			var origenY = grafica.height/2;
@@ -62,7 +62,6 @@
 			
 			
 			
-			/* Raul va a coger unos datos inventados y va a poblar esferitas sobre la gráfica en el canvas */
 			var datos = [
 				[230, 420],
 				[210, 410],
@@ -82,8 +81,9 @@
 				[110, 155],
 				[70, 200]
 			];
+			/* Salva va a alimentar de datos reales la gráfica*/
 			
-			/* Gabri sobre esas esferitas dibuja unas esferas agrupadoras */
+			
 			
 			var mibucle;
 			inicio();
@@ -93,7 +93,8 @@
 			inicio();
 			
 			function inicio(){
-
+				// Gabri + Raul va a repasar la información de Salvador, y va a establecer grupos de puntos en base a un thresold
+				// Si radio = 5, el sistema debe detectar qué puntos estan mas cerca de 5, y dibujar un circulo conteniendolos
 				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
 				contexto.beginPath();
 				for (var i = 0; i < datos.length; i++) {
@@ -103,6 +104,7 @@
 					contexto.closePath();
 				}
 				
+				/* Tirar una linea entre cada pareja de puntos que este a menos del umbral */
 
 				mibucle = setTimeout("bucle()",5000);
 			}
@@ -110,7 +112,7 @@
 			function bucle(){
 
 
-				//Esferas Grupales (Gabri)
+				
 				for (var i=0; i<listEsferasGrupales.length; i++) {
 					//Cogemos radio y posicion del punto
 					let posx = listEsferasGrupales[i][0];
