@@ -105,7 +105,11 @@
 				}
 				
 				/* Tirar una linea entre cada pareja de puntos que este a menos del umbral */
-
+				
+				for (var i = 0; i < parejas de puntos que estén a menos del umbral.lenght; i++){
+					dibujaLinea(puntomedio(punto1),puntomedio(punto2)); 
+				}
+					      //FALTA CAMBIAR OBJETOS POR LOS VALORES FINALES//
 				mibucle = setTimeout("bucle()",5000);
 			}
 			
@@ -131,6 +135,7 @@
 				mibucle = setTimeout("bucle()",5000);
 			}
 			
+<<<<<<< HEAD
 			//Funcion para objeter el punto medio entre dos objetos//
 			function puntoMedio(objeto){
 				var posx = objeto[0]
@@ -138,6 +143,15 @@
 				var centro = new array[posx,posy]
 				return centro;
 			
+=======
+			function dibujaLinea(objeto1,objeto2){
+					
+					contexto.beginPath();
+					contexto.moveTo(objeto1, objeto2);
+					contexto.lineTo(objeto1, objeto2);
+					contexto.stroke();
+
+>>>>>>> e0a354a263c0dbfe6ed594c100d5cfc0a78bf428
 			}
 		</script>
 	</body>
