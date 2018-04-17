@@ -21,16 +21,7 @@
 				}
 		</style>
 		<style>
-			/* Manu va a hacer el CSS de la propia pagina */
-
-
-			body {
-				background-image: url("paper.gif");
-				background-repeat: repeat;
-			}
-
-
-
+			
 		</style>
 	</head>
 	<body>
@@ -81,6 +72,11 @@
 				[110, 155],
 				[70, 200]
 			];
+			
+			var umbral = 150;
+			var puntosGrupos = [];
+			var grupo = 0;
+			
 			/* Salva va a alimentar de datos reales la gráfica*/
 			
 			
@@ -92,10 +88,42 @@
 			
 			inicio();
 			
+			//Funcion para calcular distancia entre dos puntos (dados en array)
+			function distanciaPuntos(p1, p2) {
+				return Math.sqrt(Math.pow(p1[0]-p2[0], 2)+Math.pow(p1[1]-p2[1], 2));
+			}
+			
 			function inicio(){
 				// Gabri + Raul va a repasar la información de Salvador, y va a establecer grupos de puntos en base a un thresold
 				// Si radio = 5, el sistema debe detectar qué puntos estan mas cerca de 5, y dibujar un circulo conteniendolos
+				
+				//-----------------------------------------
+				//Busqueda de puntos por debajo del umbral
+				for (var i=0; i<datos.length; i++) {
+					var aumentarGrupo = 0;
+					for (var j=i+1; j<datos.length; j++) {
+						var distancia = distanciaPuntos(datos[i], datos[j]);
+						if (distancia <= umbral) {
+							console.log("mismo grupo");
+							var punto1 = [datos[i][0], datos[i][1], grupo];
+							var punto2 = [datos[j][0], datos[j][1], grupo];
+							puntosGrupos.push(punto1);
+							puntosGrupos.push(punto2);
+							aumentarGrupo++;
+						}
+					}
+					if (aumentarGrupo > 0) {
+						grupo++;
+					}
+				}
+				
+				console.log(puntosGrupos);
+				
+				//Modificar lista de esferas grupales
 				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
+				
+				
+				//------------------------------------------
 				contexto.beginPath();
 				for (var i = 0; i < datos.length; i++) {
 					contexto.arc(datos[i][0], datos[i][1], 5, 0, 2*Math.PI);
