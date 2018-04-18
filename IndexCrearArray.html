@@ -1,0 +1,215 @@
+<html>
+	<head>
+	
+		<style>
+			/* Fran va a hacer el CSS del Canvas*/ 
+			#grafica{
+				border-style: groove;
+				border-width: 2px 2px 10px 2px;
+				border-color: #ccae72;
+				border-radius: 5px;
+				
+			  
+				
+			}
+			body{
+			text-align: center;
+			}
+			h1 {
+					color: a08b61;
+					text-shadow: 3px 2px 59544b;
+				}
+		</style>
+		<style>
+			/* Manu va a hacer el CSS de la propia pagina */
+
+
+			body {
+				//background-image: url("paper.gif");
+				background-repeat: repeat;
+			}
+
+
+
+		</style>
+	</head>
+	<body>
+	
+		<h1>Grafica Fantasma</h1>
+		<canvas id="grafica" width=512px height=512px>
+		<script>
+			var contexto = document.getElementById("grafica").getContext("2d");			
+			/* Salvador va a elaborar la parte crear la gráfica en plan de coordenadas, abscisas */
+			// Origen de los ejes
+			var origenX = grafica.width/2;
+			var origenY = grafica.height/2;
+			
+			contexto.lineWidth = 2;			
+			// Eje X
+			contexto.lineWidth = 2;
+			contexto.strokeStyle = "Red";
+			contexto.beginPath();
+			contexto.moveTo(0,origenY);
+			contexto.lineTo(grafica.width,origenY);
+			contexto.stroke();			
+			// Eje Y
+			contexto.lineWidth = 3;
+			contexto.strokeStyle = "Green";
+			contexto.beginPath();
+			contexto.moveTo(origenX,0);
+			contexto.lineTo(origenX,grafica.height);
+			contexto.stroke();
+			
+			
+			
+			/* Raul va a coger unos datos inventados y va a poblar esferitas sobre la gráfica en el canvas */
+			var datos = [
+				[230, 420],
+				[210, 410],
+				[200, 400],
+				[0, 100],
+				[20, 100],
+				[40, 100],
+				[50, 80],
+				[300, 600],
+				[260, 570],
+				[270, 620],
+				[260, 650],
+				[100, 150],
+				[110, 160],
+				[105, 170],
+				[104, 155],
+				[110, 155],
+				[70, 200]
+			];
+			
+			var datos3 = [
+			[0, 0, 0]
+			];			
+			
+			
+			/* Gabri sobre esas esferitas dibuja unas esferas agrupadoras */
+			
+			var mibucle;
+			inicio();
+			
+			var listEsferasGrupales;
+			
+			inicio();
+			
+			
+			
+			
+			
+			
+			function obtenerDatos(){
+			
+				var db_name = 'trainingSetDB';
+				var db_version = '1.0';
+				var db_describe = 'BD trainingSetDB';
+				var db_size = 10 * 1024 * 1024;
+				var db = openDatabase(db_name, db_version, db_describe, db_size, function(db) {        
+					console.log("Database opened Successfully! Or created for the first time !");        
+				});
+				
+				db.transaction(function(tx) {
+					tx.executeSql(
+								"SELECT * FROM registro ",
+								[],
+								//////////////////////////
+								function(sqlTransaction, sqlResultSet) {									
+									var rows;
+									var len;
+									
+									rows = sqlResultSet.rows;
+									len = rows.length;
+									console.log(rows.length);									
+									for (var i = 0; i < sqlResultSet.rows.length; i++){
+										datos3[i] = [sqlResultSet.rows.item(i).posXJugador,sqlResultSet.rows.item(i).posXBot,sqlResultSet.rows.item(i).posYBot];										
+									}									
+									
+								},								
+								//////////////////////////
+								function(sqlTransaction, sqlError) {
+									switch (sqlError.code) {
+									case sqlError.SYNTAX_ERR:
+										console.error("Syntax error has occurred. " + sqlError.message);
+										break;
+									default:
+										console.error("Other error");
+									}
+								}
+					);
+				}, transError, transSuccess);	
+				
+			}
+
+			function transError(t, e) {
+				/*
+				console.log(t);
+				console.log(e);
+				console.error("Error occured ! Code:" + e.code + " Message : " + e.message);
+				*/
+			}
+
+			function transSuccess(t, r) {
+				/*
+				console.info("Transaction completed Successfully!");
+				console.log(t);
+				console.log(r);
+				*/
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+
+			
+			function inicio(){
+
+				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
+				contexto.beginPath();
+				for (var i = 0; i < datos.length; i++) {
+					contexto.arc(datos[i][0], datos[i][1], 5, 0, 2*Math.PI);
+					contexto.fillStyle = "black";
+					contexto.fill();
+					contexto.closePath();
+				}
+				
+
+				mibucle = setTimeout("bucle()",5000);
+				
+				obtenerDatos();
+			}
+			
+			function bucle(){
+
+
+				//Esferas Grupales (Gabri)
+				for (var i=0; i<listEsferasGrupales.length; i++) {
+					//Cogemos radio y posicion del punto
+					let posx = listEsferasGrupales[i][0];
+					let posy = listEsferasGrupales[i][1];
+					let radio = 20;
+					contexto.strokeStyle = "orange";
+					contexto.beginPath();
+					contexto.arc(posx, posy, radio, 0, 2*Math.PI, false);
+					contexto.stroke();
+					contexto.closePath();
+				}
+				
+
+
+				clearTimeout(mibucle);
+				mibucle = setTimeout("bucle()",5000);
+			}
+		</script>
+	</body>
+</html>
