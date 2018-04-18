@@ -73,6 +73,7 @@
 			// Origen de los ejes
 			var origenX = grafica.width/2;
 			var origenY = grafica.height/2;
+			var umbral = 5;
 			
 			contexto.lineWidth = 2;			
 			// Eje X
@@ -137,7 +138,9 @@
 				/* Tirar una linea entre cada pareja de puntos que este a menos del umbral */
 				
 				for (var i = 0; i < datos.length; i++){
-					if(Math.abs(datos[i][1]-datos[i+1][1]) >= umbral){
+				
+					if(Math.abs(datos[i][1]-datos[i+1][1]) >= umbral && i <= datos.length -1){
+					console.log("Traca"+Math.abs(datos[i][1]-datos[i+1][1]))
 						dibujaLinea(datos[i],datos[i+1]);
 					}
 					 
