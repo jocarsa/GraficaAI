@@ -13,6 +13,15 @@
 			  
 				
 			}
+			#contenedor{
+				position: absolute;
+				top:650;
+				border-style: groove;
+				border-width: 2px 2px 10px 2px;
+				border-color: #313842;
+				border-radius: 5px;
+				background-color: #e3e5e8;
+			}
 			body{
 			text-align: center;
 			}
@@ -21,8 +30,16 @@
 					font-family: Arial, Helvetica, sans-serif;
 					text-shadow: 5px 3px #313842;
 				}
+<<<<<<< HEAD
 			
 		
+=======
+				h2 {
+					color: #222326;
+					font-family: Arial, Helvetica, sans-serif;
+					
+				}
+>>>>>>> FranyManu
 		</style>
 		<style>
 			/* Manu va a hacer el CSS de la propia pagina */
@@ -45,6 +62,17 @@
 	<body>
 		
 		<h1>Grafica Fantasma</h1>
+		
+		 <TABLE id = "Contenedor" >
+			<TR><TD>
+				<TABLE>
+					<h2>Programadores:Manu,Salva,Raul,Gabri y Fran</h2>
+				</TABLE>
+				<TABLE>
+					<h2>Tecnologia utilizada:Html,Css,Javascript</h2>
+				</TABLE>
+		  </TD></TR>
+        </TABLE>
 		<canvas id="grafica" width=512px height=512px>
 		
 		
@@ -55,6 +83,7 @@
 			// Origen de los ejes
 			var origenX = grafica.width/2;
 			var origenY = grafica.height/2;
+			var umbral = 5;
 			
 			contexto.lineWidth = 2;			
 			// Eje X
@@ -1480,7 +1509,9 @@
 
 				
 				for (var i = 0; i < datos.length; i++){
-					if(Math.abs(datos[i][1]-datos[i+1][1]) >= umbral){
+				
+					if(Math.abs(datos[i][1]-datos[i+1][1]) >= umbral && i <= datos.length -1){
+					console.log("Traca"+Math.abs(datos[i][1]-datos[i+1][1]))
 						dibujaLinea(datos[i],datos[i+1]);
 					}
 					 
@@ -1538,5 +1569,6 @@
 
 			}
 		</script>
+		
 	</body>
 </html>
