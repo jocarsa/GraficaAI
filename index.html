@@ -60,8 +60,6 @@
 			contexto.lineTo(origenX,grafica.height);
 			contexto.stroke();
 			
-			
-			
 			var datos = [
 				[230, 420],
 				[210, 410],
@@ -82,17 +80,105 @@
 				[70, 200]
 			];
 			/* Salva va a alimentar de datos reales la gráfica*/
+			function IARegistro() {
+				// Propiedades
+				this.iteracion;
+				this.posXJugador; 
+				this.posXBot; 
+				this.posYBot; 
+				this.dirBot;
+				this.acierto;
+				// Métodos
+			}
+			
+			var trainingSet = new Array();		
 			
 			
+			var datos3 = [
+			[0, 0, 0]
+			];	
 			
-			var mibucle;
-			inicio();
+			function obtenerDatos(){
 			
+				var db_name = 'trainingSetDB';
+				var db_version = '1.0';
+				var db_describe = 'BD trainingSetDB';
+				var db_size = 10 * 1024 * 1024;
+				var db = openDatabase(db_name, db_version, db_describe, db_size, function(db) {        
+					console.log("Database opened Successfully! Or created for the first time !");        
+				});
+				
+				db.transaction(function(tx) {
+					tx.executeSql(
+								"SELECT * FROM registro ",
+								[],
+								//////////////////////////
+								function(sqlTransaction, sqlResultSet) {									
+									var rows;
+									var len;
+									
+									rows = sqlResultSet.rows;
+									len = rows.length;
+									
+									for (var i = 0; i < sqlResultSet.rows.length; i++){
+										//datos3[i] = [sqlResultSet.rows.item(i).posXJugador,sqlResultSet.rows.item(i).posXBot,sqlResultSet.rows.item(i).posYBot];										
+										trainingSet[i] = new IARegistro();	
+										trainingSet[i].conjunto = sqlResultSet.rows.item(i).conjunto;
+										trainingSet[i].iteracion = sqlResultSet.rows.item(i).iteracion;
+										trainingSet[i].posXJugador = sqlResultSet.rows.item(i).posXJugador;
+										trainingSet[i].posXBot = sqlResultSet.rows.item(i).posXBot;
+										trainingSet[i].posYBot = sqlResultSet.rows.item(i).posYBot;
+										trainingSet[i].movimientoBot = sqlResultSet.rows.item(i).movimientoBot;
+										trainingSet[i].acierto = sqlResultSet.rows.item(i).acierto;
+									}				
+									console.log(rows.length + " filas cargadas");
+									console.table(trainingSet);
+									
+									// Una vez ha rellenado el array de datos lanza el inicio
+									inicio();
+									
+									
+								},								
+								//////////////////////////
+								function(sqlTransaction, sqlError) {
+									switch (sqlError.code) {
+									case sqlError.SYNTAX_ERR:
+										console.error("Syntax error has occurred. " + sqlError.message);
+										break;
+									default:
+										console.error("Other error");
+									}
+								}
+					);
+				}, transError, transSuccess);	
+				
+			}
+
+			function transError(t, e) {
+				/*
+				console.log(t);
+				console.log(e);
+				console.error("Error occured ! Code:" + e.code + " Message : " + e.message);
+				*/
+			}
+
+			function transSuccess(t, r) {
+				/*
+				console.info("Transaction completed Successfully!");
+				console.log(t);
+				console.log(r);
+				*/
+			}			
+			
+			var mibucle;					
 			var listEsferasGrupales;
 			
-			inicio();
+			obtenerDatos();			
+			// Salva: el inicio se llama desde obtenerDatos, porque se utilizan transacciones WebSQL asíncronas
+			//inicio(); 
 			
 			function inicio(){
+			
 				// Gabri + Raul va a repasar la información de Salvador, y va a establecer grupos de puntos en base a un thresold
 				// Si radio = 5, el sistema debe detectar qué puntos estan mas cerca de 5, y dibujar un circulo conteniendolos
 				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
