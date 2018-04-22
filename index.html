@@ -51,23 +51,23 @@
 			contexto.stroke();
 			
 			var datos = [
-				[230, 420],
-				[70, 200],
-				[210, 410],
-				[200, 400],
-				[0, 100],
-				[20, 100],
-				[40, 100],
-				[50, 80],
-				[300, 600],
-				[260, 570],
-				[270, 620],
-				[260, 650],
-				[100, 150],
-				[110, 160],
-				[105, 170],
-				[104, 155],
-				[110, 155]
+				[210, 230, 420],
+				[101, 70, 200],
+				[104, 210, 410],
+				[306, 200, 400],
+				[250, 0, 100],
+				[340, 20, 100],
+				[89, 40, 100],
+				[120, 50, 80],
+				[45, 300, 600],
+				[1, 260, 570],
+				[10, 270, 620],
+				[500, 260, 650],
+				[278, 100, 150],
+				[111, 110, 160],
+				[433, 105, 170],
+				[344, 104, 0155],
+				[121, 110, 155]
 			];
 			
 			var umbral = 100;
@@ -91,8 +91,8 @@
 			
 			function calcularGrupoDePunto(punto, puntos) {
 				for (var i = 0; i < puntos.length; i++) {
-					if (puntos[i][0] == punto[0] && puntos[i][1] == punto[1]) {
-						return puntos[i][2];
+					if (puntos[i][1] == punto[0] && puntos[i][2] == punto[1]) {
+						return puntos[i][3];
 					}
 				}
 				return -1;
@@ -105,37 +105,39 @@
 				//-----------------------------------------
 				//Busqueda de puntos por debajo del umbral
 				for (var i = 0; i < datos.length; i++) {
+					var punto1 = [datos[i][1], datos[i][2]];
 					console.log("bucle i, iteracion: " + i);
 					for (var j = i + 1; j < datos.length; j++) {
+						var punto2 = [datos[j][1], datos[j][2]];
 						console.log("bucle j, iteracion: " + j);
-						console.log("punto 1: " + datos[i]);
-						console.log("punto 2: " + datos[j]);
-						var distancia = distanciaPuntos(datos[i], datos[j]);
+						console.log("punto 1: " + punto1);
+						console.log("punto 2: " + punto2);
+						var distancia = distanciaPuntos(punto1, punto2);
 						console.log("distancia: " + distancia);
 						if (distancia <= umbral) {
 							console.log("Los puntos están cercanos");
 							// Calculamos los grupos a los que pertenecen los puntos
 							// En caso de no pertenecer a un grupo devolverá valor -1
-							var grupoPunto1 = calcularGrupoDePunto(datos[i], puntosAgrupados);
-							var grupoPunto2 = calcularGrupoDePunto(datos[j], puntosAgrupados);
+							var grupoPunto1 = calcularGrupoDePunto(punto1, puntosAgrupados);
+							var grupoPunto2 = calcularGrupoDePunto(punto2, puntosAgrupados);
 							// Si el punto 1 pertenece a un grupo pero el punto 2 no, entonces insertamos el punto 2 en el grupo del punto 1
 							if (grupoPunto1 != -1 && grupoPunto2 == -1) {
-								puntosAgrupados.push([datos[j][0], datos[j][1], grupoPunto1]);
+								puntosAgrupados.push([datos[j][0], punto2[0], punto2[1], grupoPunto1]);
 							// Si el punto 2 pertenece a un grupo pero el punto 1 no, entonces insertamos el punto 1 en el grupo del punto 2
 							} else if (grupoPunto1 == -1 && grupoPunto2 != -1) {
-								puntosAgrupados.push([datos[i][0], datos[i][1], grupoPunto2]);
+								puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupoPunto2]);
 							// Si ninguno de los puntos pertenece a un grupo los insertamos en un grupo nuevo
 							} else if (grupoPunto1 == -1 && grupoPunto2 == -1){
-								puntosAgrupados.push([datos[i][0], datos[i][1], grupo]);
-								puntosAgrupados.push([datos[j][0], datos[j][1], grupo]);
+								puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupo]);
+								puntosAgrupados.push([datos[j][0], punto2[0], punto2[1], grupo]);
 								grupo++;
 								console.log("grupo aumentado: " + grupo);
 							}
 						}
 					}
 					// Si el punto 1 no está cerca de ningún punto, entonces lo metemos en un grupo nuevo
-					if (calcularGrupoDePunto(datos[i], puntosAgrupados) == -1) {
-						puntosAgrupados.push([datos[i][0], datos[i][1], grupo]);
+					if (calcularGrupoDePunto(punto1, puntosAgrupados) == -1) {
+						puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupo]);
 						grupo++;
 						console.log("grupo aumentado: " + grupo);
 					}
@@ -150,7 +152,7 @@
 				//------------------------------------------
 				contexto.beginPath();
 				for (var i = 0; i < datos.length; i++) {
-					contexto.arc(datos[i][0], datos[i][1], 5, 0, 2*Math.PI);
+					contexto.arc(datos[i][1], datos[i][2], 5, 0, 2*Math.PI);
 					contexto.fillStyle = "black";
 					contexto.fill();
 					contexto.closePath();
