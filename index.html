@@ -29,20 +29,19 @@
 		<h1>Grafica Fantasma</h1>
 		<canvas id="grafica" width=512px height=512px>
 		<script>
-			var contexto = document.getElementById("grafica").getContext("2d");			
+			var contexto = document.getElementById("grafica").getContext("2d");
 			
 			// Origen de los ejes
 			var origenX = grafica.width/2;
 			var origenY = grafica.height/2;
 			
-			contexto.lineWidth = 2;			
 			// Eje X
 			contexto.lineWidth = 2;
 			contexto.strokeStyle = "Red";
 			contexto.beginPath();
 			contexto.moveTo(0,origenY);
 			contexto.lineTo(grafica.width,origenY);
-			contexto.stroke();			
+			contexto.stroke();
 			// Eje Y
 			contexto.lineWidth = 3;
 			contexto.strokeStyle = "Green";
@@ -51,10 +50,9 @@
 			contexto.lineTo(origenX,grafica.height);
 			contexto.stroke();
 			
-			
-			
 			var datos = [
 				[230, 420],
+				[70, 200],
 				[210, 410],
 				[200, 400],
 				[0, 100],
@@ -69,12 +67,11 @@
 				[110, 160],
 				[105, 170],
 				[104, 155],
-				[110, 155],
-				[70, 200]
+				[110, 155]
 			];
 			
-			var umbral = 150;
-			var puntosGrupos = [];
+			var umbral = 100;
+			var puntosAgrupados = new Array();
 			var grupo = 0;
 			
 			/* Salva va a alimentar de datos reales la gráfica*/
@@ -82,7 +79,6 @@
 			
 			
 			var mibucle;
-			inicio();
 			
 			var listEsferasGrupales;
 			
@@ -90,7 +86,16 @@
 			
 			//Funcion para calcular distancia entre dos puntos (dados en array)
 			function distanciaPuntos(p1, p2) {
-				return Math.sqrt(Math.pow(p1[0]-p2[0], 2)+Math.pow(p1[1]-p2[1], 2));
+				return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+			}
+			
+			function calcularGrupoDePunto(punto, puntos) {
+				for (var i = 0; i < puntos.length; i++) {
+					if (puntos[i][0] == punto[0] && puntos[i][1] == punto[1]) {
+						return puntos[i][2];
+					}
+				}
+				return -1;
 			}
 			
 			function inicio(){
@@ -99,25 +104,44 @@
 				
 				//-----------------------------------------
 				//Busqueda de puntos por debajo del umbral
-				for (var i=0; i<datos.length; i++) {
-					var aumentarGrupo = 0;
-					for (var j=i+1; j<datos.length; j++) {
+				for (var i = 0; i < datos.length; i++) {
+					console.log("bucle i, iteracion: " + i);
+					for (var j = i + 1; j < datos.length; j++) {
+						console.log("bucle j, iteracion: " + j);
+						console.log("punto 1: " + datos[i]);
+						console.log("punto 2: " + datos[j]);
 						var distancia = distanciaPuntos(datos[i], datos[j]);
+						console.log("distancia: " + distancia);
 						if (distancia <= umbral) {
-							console.log("mismo grupo");
-							var punto1 = [datos[i][0], datos[i][1], grupo];
-							var punto2 = [datos[j][0], datos[j][1], grupo];
-							puntosGrupos.push(punto1);
-							puntosGrupos.push(punto2);
-							aumentarGrupo++;
+							console.log("Los puntos están cercanos");
+							// Calculamos los grupos a los que pertenecen los puntos
+							// En caso de no pertenecer a un grupo devolverá valor -1
+							var grupoPunto1 = calcularGrupoDePunto(datos[i], puntosAgrupados);
+							var grupoPunto2 = calcularGrupoDePunto(datos[j], puntosAgrupados);
+							// Si el punto 1 pertenece a un grupo pero el punto 2 no, entonces insertamos el punto 2 en el grupo del punto 1
+							if (grupoPunto1 != -1 && grupoPunto2 == -1) {
+								puntosAgrupados.push([datos[j][0], datos[j][1], grupoPunto1]);
+							// Si el punto 2 pertenece a un grupo pero el punto 1 no, entonces insertamos el punto 1 en el grupo del punto 2
+							} else if (grupoPunto1 == -1 && grupoPunto2 != -1) {
+								puntosAgrupados.push([datos[i][0], datos[i][1], grupoPunto2]);
+							// Si ninguno de los puntos pertenece a un grupo los insertamos en un grupo nuevo
+							} else if (grupoPunto1 == -1 && grupoPunto2 == -1){
+								puntosAgrupados.push([datos[i][0], datos[i][1], grupo]);
+								puntosAgrupados.push([datos[j][0], datos[j][1], grupo]);
+								grupo++;
+								console.log("grupo aumentado: " + grupo);
+							}
 						}
 					}
-					if (aumentarGrupo > 0) {
+					// Si el punto 1 no está cerca de ningún punto, entonces lo metemos en un grupo nuevo
+					if (calcularGrupoDePunto(datos[i], puntosAgrupados) == -1) {
+						puntosAgrupados.push([datos[i][0], datos[i][1], grupo]);
 						grupo++;
+						console.log("grupo aumentado: " + grupo);
 					}
 				}
 				
-				console.log(puntosGrupos);
+				console.log(puntosAgrupados);
 				
 				//Modificar lista de esferas grupales
 				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
