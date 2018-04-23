@@ -80,7 +80,11 @@
 			// Origen de los ejes
 			var origenX = grafica.width/2;
 			var origenY = grafica.height/2;
+<<<<<<< HEAD
 			var umbral = 105;
+=======
+			var umbral = 100;
+>>>>>>> FranyManu
 			
 			contexto.lineWidth = 2;			
 			// Eje X
@@ -1411,18 +1415,38 @@
 				}
 				
 				/* Tirar una linea entre cada pareja de puntos que este a menos del umbral */
+<<<<<<< HEAD
 
 				/*////////////////////////////////CAMBIAR NOMBRE VARIABLE////////////////////////////////////*/
 				 
 
 				
+=======
+				/*/////////////////////////////////Cambiar los datos a comparar y a dibujar/////////////////////////////////////////*/
+>>>>>>> FranyManu
 				for (var i = 0; i < datos.length; i++){
+				var currentDato = datos[i]
+				console.log("CurrentDato"+currentDato);
+					for(var x = 0;x<datos.length;x++){
+						var datoComparacion = datos[x];
+						console.log("DatoComparacion"+datoComparacion);
+						console.log("Las distancias entre los objetos son"+Math.abs(currentDato[0]-datoComparacion[0])+"En X");
+						console.log("Las distancias entre los objetos son"+Math.abs(currentDato[1]-datoComparacion[1])+"En Y");
+						if(Math.abs(currentDato[0]-datoComparacion[0]) < umbral && Math.abs(currentDato[1]-datoComparacion[1]) < umbral ){
+						console.log("Estoy dentro de dibujar");
+							dibujaLinea(currentDato,datoComparacion);
+						
+						}
 				
+<<<<<<< HEAD
 					if(Math.abs(datos[i][1]-datos[i+1][1]) <= umbral && Math.abs(datos[i][2]-datos[i+1][2]) <= umbral){
 						console.log("Traca"+Math.abs(datos[i][1]-datos[i+1][1]))
 						dibujaLinea(datos[i],datos[i+1]);
 					}
 					 
+=======
+					 }
+>>>>>>> FranyManu
 				}
 				
 					      //FALTA CAMBIAR OBJETOS POR LOS VALORES FINALES//
