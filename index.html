@@ -1422,7 +1422,7 @@
 				for (var i = 0; i < datos.length; i++) {
 					var punto1 = [datos[i][1], datos[i][2]];
 					console.log("bucle i, iteracion: " + i);
-					for (var j = i + 1; j < datos.length; j++) {
+					for (var j = 0; j < datos.length; j++) {
 						var punto2 = [datos[j][1], datos[j][2]];
 						console.log("bucle j, iteracion: " + j);
 						console.log("punto 1: " + punto1);
@@ -1434,20 +1434,59 @@
 							// Calculamos los grupos a los que pertenecen los puntos
 							// En caso de no pertenecer a un grupo devolverá valor -1
 							var grupoPunto1 = calcularGrupoDePunto(punto1, puntosAgrupados);
+							console.log("grupoPunto1: " + grupoPunto1);
 							var grupoPunto2 = calcularGrupoDePunto(punto2, puntosAgrupados);
+							console.log("grupoPunto2: " + grupoPunto2);
+							/*if (grupoPunto1 != -1 && grupoPunto2 != -1 && grupoPunto1 < grupoPunto2) {
+								puntosAgrupados[i][3] = puntosAgrupados[j][3];
+							}*/
 							// Si el punto 1 pertenece a un grupo pero el punto 2 no, entonces insertamos el punto 2 en el grupo del punto 1
 							if (grupoPunto1 != -1 && grupoPunto2 == -1) {
+								console.log("***********************************ANYADO punto2: " + punto2 + " en el grupo del punto 1 " + punto1);
 								puntosAgrupados.push([datos[j][0], punto2[0], punto2[1], grupoPunto1]);
 							// Si el punto 2 pertenece a un grupo pero el punto 1 no, entonces insertamos el punto 1 en el grupo del punto 2
 							} else if (grupoPunto1 == -1 && grupoPunto2 != -1) {
+								console.log("***********************************ANYADO punto1: " + punto1 + " en el grupo del punto 2 " + punto2);
 								puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupoPunto2]);
-							// Si ninguno de los puntos pertenece a un grupo los insertamos en un grupo nuevo
-							} else if (grupoPunto1 == -1 && grupoPunto2 == -1){
-								puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupo]);
-								puntosAgrupados.push([datos[j][0], punto2[0], punto2[1], grupo]);
-								grupo++;
-								console.log("grupo aumentado: " + grupo);
-							}
+							// Si ninguno de los puntos pertenece a un grupo:
+							}/* else if (grupoPunto1 == -1 && grupoPunto2 == -1) {
+								// Miramos si el punto 1 o el punto 2 están cerca de algún punto:
+								var incluyo = 0;
+								for (k = 0; k < datos.length; k++) {
+									var punto3 = [datos[k][1], datos[k][2]];
+									var grupoPunto3 = calcularGrupoDePunto(punto3, puntosAgrupados);
+									// Si punto3 pertenece a un grupo:
+									if (grupoPunto3 != -1) {
+										console.log("hola");
+										console.log("punto3: ", punto3);
+										console.log("grupoPunto3: " + grupoPunto3);
+										var distancia1 = distanciaPuntos(punto1, punto3);
+										console.log("distancia1: " + distancia1);
+										var distancia2 = distanciaPuntos(punto2, punto3);
+										console.log("distancia2: " + distancia2);
+										if (distancia1 <= umbral) {
+											console.log("hola1");
+											var grupoPunto3 = calcularGrupoDePunto(punto3, puntosAgrupados);
+											puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupoPunto3]);
+											incluyo++;
+										}
+										if (distancia2 <= umbral) {
+											console.log("hola2");
+											var grupoPunto3 = calcularGrupoDePunto(punto3, puntosAgrupados);
+											puntosAgrupados.push([datos[i][0], punto2[0], punto2[1], grupoPunto3]);
+											incluyo++;
+										}
+									}
+								}
+								if (incluyo == 0) {
+									puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupo]);
+									puntosAgrupados.push([datos[j][0], punto2[0], punto2[1], grupo]);
+									grupo++;
+									console.log("grupo aumentado: " + grupo);
+									console.log("***********************************punto1: " + punto1);
+									console.log("***********************************punto2: " + punto2);
+								}
+							}*/
 						}
 					}
 					// Si el punto 1 no está cerca de ningún punto, entonces lo metemos en un grupo nuevo
@@ -1477,6 +1516,8 @@
 					contexto.arc(puntosAgrupados[i][1], puntosAgrupados[i][2], 5, 0, 2 * Math.PI);
 					contexto.closePath();
 					contexto.fill();
+					contexto.font = "10px Arial";
+					contexto.fillText(puntosAgrupados[i][1] + "," + puntosAgrupados[i][2], puntosAgrupados[i][1], puntosAgrupados[i][2] - 5);
 				}
 				
 				
@@ -1552,7 +1593,7 @@
 						//console.log("Las distancias entre los objetos son"+Math.abs(currentDato[2]-datoComparacion[2])+"En Y");
 						if (Math.abs(currentDato[1] - datoComparacion[1]) < umbral && Math.abs(currentDato[2] - datoComparacion[2]) < umbral ) {
 							//console.log("Estoy dentro de dibujar");
-							dibujaLinea(currentDato,datoComparacion);
+							//dibujaLinea(currentDato,datoComparacion);
 						}
 					/*
 					if(Math.abs(datos[i][1]-datos[i+1][1]) <= umbral && Math.abs(datos[i][2]-datos[i+1][2]) <= umbral){
