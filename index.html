@@ -1376,9 +1376,12 @@
 			[416,262,300],[414,298,350],[385,388,250],[383,424,300],[381,424,375],[379,388,425],[378,82,25],[368,262,275],[366,298,325],[364,334,375]]			
 			*/
 
-			var datos = [[243,118,25],[245,82,75],[247,46,125],[248,424,150],[249,10,175],[250,424,225],[251,46,250],[252,388,275],[253,82,300],[254,352,325],[256,316,375],
-			[258,280,425],[291,118,425],[293,82,50],[295,46,100],[297,10,150],[307,190,425],[309,226,50],[311,262,100],[313,298,150],[315,334,200],[317,370,250],
-			[338,316,375],[340,352,425],[341,82,25],[343,46,75],[363,334,175]];
+			var datos = [
+				[243,118,25],[245,82,75],[247,46,125],[248,424,150],[249,10,175],[250,424,225],[251,46,250],[252,388,275],
+				[253,82,300],[254,352,325],[256,316,375],[258,280,425],[291,118,425],[293,82,50],[295,46,100],[297,10,150],
+				[307,190,425],[309,226,50],[311,262,100],[313,298,150],[315,334,200],[317,370,250],[338,316,375],[340,352,425],
+				[341,82,25],[343,46,75],[363,334,175]
+			];
 
 			var umbral = 100;
 			var puntosAgrupados = new Array();
@@ -1402,7 +1405,15 @@
 				return -1;
 			}
 			
-			function inicio(){
+			function inicio() {
+				//---------PINTADO DE LOS PUNTOS-----------
+				//contexto.beginPath();
+				//for (var i = 0; i < datos.length; i++) {
+				//	contexto.arc(datos[i][1], datos[i][2], 5, 0, 2 * Math.PI);
+				//	contexto.fillStyle = "black";
+				//	contexto.fill();
+				//	contexto.closePath();
+				//}
 				// Gabri + Raul va a repasar la información de Salvador, y va a establecer grupos de puntos en base a un thresold
 				// Si radio = 5, el sistema debe detectar qué puntos estan mas cerca de 5, y dibujar un circulo conteniendolos
 				
@@ -1447,106 +1458,135 @@
 					}
 				}
 				
-				console.log(puntosAgrupados);
+				console.log("grupo: " + grupo);
+				console.log("puntos:", puntosAgrupados);
 				
-				//Modificar lista de esferas grupales
-				listEsferasGrupales = [[43, 365], [412, 12], [123, 456], [12, 12], [256, 256]];
-				
-				
-				//------------------------------------------
-				contexto.beginPath();
-				for (var i = 0; i < datos.length; i++) {
-					contexto.arc(datos[i][1], datos[i][2], 5, 0, 2*Math.PI);
-					contexto.fillStyle = "black";
+				//---------PINTADO DE LOS PUNTOS-----------
+				for (var i = 0; i < puntosAgrupados.length; i++) {
+					if (puntosAgrupados[i][3] == 0) {
+						console.log("negro");
+						contexto.fillStyle = "black";
+					} else if (puntosAgrupados[i][3] == 1) {
+						console.log("azul");
+						contexto.fillStyle = "blue";
+					} else if (puntosAgrupados[i][3] == 2) {
+						console.log("rojo");
+						contexto.fillStyle = "red";
+					}
+					contexto.beginPath();
+					contexto.arc(puntosAgrupados[i][1], puntosAgrupados[i][2], 5, 0, 2 * Math.PI);
+					contexto.closePath();
 					contexto.fill();
+				}
+				
+				
+				//--------Pintar círculos que agrupan---------------------
+				for (var i = 0; i < grupo; i++) {
+					console.log("iteracion " + i);
+					var minPosX = -1;
+					var maxPosX = -1;
+					var minPosY = -1;
+					var maxPosY = -1;
+					// Sacar el valor mínimo y máximo de X e Y en el grupo en el que estemos:
+					for (var j = 0; j < puntosAgrupados.length; j++) {
+						// Comprobar que el punto pertenece al grupo en cuestión
+						if (puntosAgrupados[j][3] == i) {
+							// Sacar la componente X
+							if (minPosX == -1) {
+								minPosX = puntosAgrupados[j][1];
+							} else if (minPosX > puntosAgrupados[j][1]) {
+								minPosX = puntosAgrupados[j][1];
+							}
+							if (maxPosX == -1) {
+								maxPosX = puntosAgrupados[j][1];
+							} else if (maxPosX < puntosAgrupados[j][1]) {
+								maxPosX = puntosAgrupados[j][1];
+							}
+							// Sacar la componente Y
+							if (minPosY == -1) {
+								minPosY = puntosAgrupados[j][2];
+							} else if (minPosY > puntosAgrupados[j][2]) {
+								minPosY = puntosAgrupados[j][2];
+							}
+							if (maxPosY == -1) {
+								maxPosY = puntosAgrupados[j][2];
+							} else if (maxPosY < puntosAgrupados[j][2]) {
+								maxPosY = puntosAgrupados[j][2];
+							}
+						}
+					}
+					
+					// Calculamos el centro de la circunferencia
+					var centroCircunferencia = [minPosX + Math.round((maxPosX - minPosX) / 2), minPosY + Math.round((maxPosY - minPosY) / 2)];
+					console.log("El centro de la circunferencia del grupo " + i + " es " + centroCircunferencia);
+					
+					// Sacamos el punto más lejano del centro del grupo en el que estemos:
+					var distanciaMaxima = 0;
+					for (var j = 0; j < puntosAgrupados.length; j++) {
+						// Comprobar que el punto pertenece al grupo en cuestión
+						if (puntosAgrupados[j][3] == i) {
+							var distancia = distanciaPuntos(centroCircunferencia, [puntosAgrupados[j][1], puntosAgrupados[j][2]]);
+							distanciaMaxima = (distancia > distanciaMaxima) ? distancia : distanciaMaxima;
+						}
+					}
+					console.log("distanciaMaxima: " + distanciaMaxima);
+					
+					// Pintamos el círculo del grupo teniendo en cuenta que el radio es distanciaMaxima:
+					contexto.beginPath();
+					contexto.arc(centroCircunferencia[0], centroCircunferencia[1], (distanciaMaxima + 5), 0, 2 * Math.PI);
+					contexto.strokeStyle = "white";
+					contexto.stroke();
 					contexto.closePath();
 				}
 				
+				
 				/* Tirar una linea entre cada pareja de puntos que este a menos del umbral */
-
-
-				/*////////////////////////////////CAMBIAR NOMBRE VARIABLE////////////////////////////////////*/
-				 
-
-				
-
 				/*/////////////////////////////////Cambiar los datos a comparar y a dibujar/////////////////////////////////////////*/
-
-				for (var i = 0; i < datos.length; i++){
+				for (var i = 0; i < datos.length; i++) {
 				var currentDato = datos[i]
-				console.log("CurrentDato"+currentDato);
-					for(var x = 0;x<datos.length;x++){
+				//console.log("CurrentDato"+currentDato);
+					for (var x = 0; x<datos.length; x++) {
 						var datoComparacion = datos[x];
-						console.log("DatoComparacion"+datoComparacion);
-						console.log("Las distancias entre los objetos son"+Math.abs(currentDato[1]-datoComparacion[1])+"En X");
-						console.log("Las distancias entre los objetos son"+Math.abs(currentDato[2]-datoComparacion[2])+"En Y");
-						if(Math.abs(currentDato[1]-datoComparacion[1]) < umbral && Math.abs(currentDato[2]-datoComparacion[2]) < umbral ){
-						console.log("Estoy dentro de dibujar");
+						//console.log("DatoComparacion"+datoComparacion);
+						//console.log("Las distancias entre los objetos son"+Math.abs(currentDato[1]-datoComparacion[1])+"En X");
+						//console.log("Las distancias entre los objetos son"+Math.abs(currentDato[2]-datoComparacion[2])+"En Y");
+						if (Math.abs(currentDato[1] - datoComparacion[1]) < umbral && Math.abs(currentDato[2] - datoComparacion[2]) < umbral ) {
+							//console.log("Estoy dentro de dibujar");
 							dibujaLinea(currentDato,datoComparacion);
-						
 						}
-				
 					/*
 					if(Math.abs(datos[i][1]-datos[i+1][1]) <= umbral && Math.abs(datos[i][2]-datos[i+1][2]) <= umbral){
 						console.log("Traca"+Math.abs(datos[i][1]-datos[i+1][1]))
 						dibujaLinea(datos[i],datos[i+1]);
 					}
 					 */
-
-					 }
-
+					}
 				}
 				
-					      //FALTA CAMBIAR OBJETOS POR LOS VALORES FINALES//
 				mibucle = setTimeout("bucle()",5000);
 			}
 			
-			function bucle(){
-
-
-				
-				for (var i=0; i<listEsferasGrupales.length; i++) {
-					//Cogemos radio y posicion del punto
-					let posx = listEsferasGrupales[i][0];
-					let posy = listEsferasGrupales[i][1];
-					let radio = 20;
-					contexto.strokeStyle = "orange";
-					contexto.beginPath();
-					contexto.arc(posx, posy, radio, 0, 2*Math.PI, false);
-					contexto.stroke();
-					contexto.closePath();
-				}
-				
-
-
+			function bucle() {
 				clearTimeout(mibucle);
 				mibucle = setTimeout("bucle()",5000);
 			}
-			
-
 
 			//Funcion para objeter el punto medio entre dos objetos//
-			function puntoMedio(objeto){
+			function puntoMedio(objeto) {
 				var posx = objeto[0]
 				var posy = objeto[1]
-				var centro = new array[posx,posy]
+				var centro = new array[posx, posy]
 				return centro;
 			}
 			
 
-
-
 			//funcion para dibujar una linea entre dos puntos//
-			function dibujaLinea(objeto1,objeto2){
-					
-					contexto.beginPath();
-
-					contexto.moveTo(objeto1[1], objeto1[2]);
-					contexto.lineTo(objeto2[1], objeto2[2]);
-
-					contexto.stroke();
-
-
+			function dibujaLinea(objeto1, objeto2) {
+				contexto.strokeStyle = "green";
+				contexto.beginPath();
+				contexto.moveTo(objeto1[1], objeto1[2]);
+				contexto.lineTo(objeto2[1], objeto2[2]);
+				contexto.stroke();
 			}
 		</script>
 		
