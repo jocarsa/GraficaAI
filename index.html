@@ -1377,185 +1377,165 @@
 			*/
 
 			var datos = [
+				/*// CONJUNTO 1
 				[243,118,25],[245,82,75],[247,46,125],[248,424,150],[249,10,175],[250,424,225],[251,46,250],[252,388,275],
 				[253,82,300],[254,352,325],[256,316,375],[258,280,425],[291,118,425],[293,82,50],[295,46,100],[297,10,150],
 				[307,190,425],[309,226,50],[311,262,100],[313,298,150],[315,334,200],[317,370,250],[338,316,375],[340,352,425],
-				[341,82,25],[343,46,75],[363,334,175]
+				[341,82,25],[343,46,75],[363,334,175]*/
+				
+				/*// CONJUNTO 2
+				[400,424,375],[403,46,50],[405,82,100],[407,118,150],[409,154,200],[411,190,250],[435,388,300],[433,424,350],
+				[431,424,425],[430,46,25],[428,82,75],[426,118,125],[424,154,175],[422,190,225],[420,226,275],[389,352,225],
+				[387,388,275],[385,424,325],[383,424,400]*/
+				
+				// CONJUNTO 3
+				[31,28,425],[30,442,25],[26,208,150],[28,172,200],[30,136,250],[32,100,300],[34,64,350],[36,28,400],[37,442,425],
+				[39,406,75],[41,370,125],[43,334,175],[72,244,75],[74,208,125],[76,172,175],[78,136,225],[80,100,275],[82,64,325],
+				[89,370,100],[91,334,150],[93,298,200],[95,262,250]
 			];
 
-			var umbral = 100;
-			var puntosAgrupados = new Array();
-			var grupo = 0;
-			var mibucle;					
-			var listEsferasGrupales;
+			var mibucle;
 			
-			inicio();
+			// DBSCAN
+			var minPts = 1;
+			var umbral = 100; // en DBSCAN se llama eps (épsilon)
+			var grupos = new Array(); // array con los grupos y los elementos que los contienen
+			var estados = new Array(); // aray con los puntos y el grupos al que pertenecen
+			
+			// Obtiene los puntos vecinos a un punto dado, en función de una distancia (umbral)
+			function obtenerVecinos(indicePunto) {
+				var vecinos = new Array();
+				var punto = datos[indicePunto];
+				
+				for (var i = 0; i < datos.length; i++) {
+					// Si el punto se está comprobando consigo mismo, saltar al siguiente
+					if (indicePunto === i) {
+						continue;
+					}
+					var punto1 = [datos[i][1], datos[i][2]];
+					var punto2 = [punto[1], punto[2]];
+					if (distanciaPuntos(punto1, punto2) <= umbral) {
+						vecinos.push(i);
+					}
+				}
+				
+				return vecinos;
+			}
+			
+			// Inserta el punto en el grupo, así como a los puntos vecinos de manera recursiva
+			function expandirGrupo(indicePunto, vecinos, indiceGrupo) {
+				grupos[indiceGrupo - 1].push(indicePunto); //añado punto al grupo
+				estados[indicePunto] = indiceGrupo; //asigno id del grupo al estado del punto
+				
+				for (var i = 0; i < vecinos.length; i++) {
+					var indicePuntoActual = vecinos[i];
+					if (estados[indicePuntoActual] === undefined) {
+						estados[indicePuntoActual] = 0; //visitado y marcado como ruido por defecto
+						var vecinosActuales = obtenerVecinos(indicePuntoActual);
+						var numVecinosActuales = vecinosActuales.length;
+						if (numVecinosActuales >= minPts) {
+							expandirGrupo(indicePuntoActual, vecinosActuales, indiceGrupo);
+						}
+					}
+					
+					if (estados[indicePuntoActual] < 1) { //no asignado a un grupo pero visitado
+						estados[indicePuntoActual] = indiceGrupo;
+						grupos[indiceGrupo - 1].push(indicePuntoActual);
+					}
+				}
+			}
 			
 			//Funcion para calcular distancia entre dos puntos (dados en array)
 			function distanciaPuntos(p1, p2) {
 				return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
 			}
 			
-			function calcularGrupoDePunto(punto, puntos) {
-				for (var i = 0; i < puntos.length; i++) {
-					if (puntos[i][1] == punto[0] && puntos[i][2] == punto[1]) {
-						return puntos[i][3];
-					}
-				}
-				return -1;
-			}
+			inicio();
 			
 			function inicio() {
-				//---------PINTADO DE LOS PUNTOS-----------
-				//contexto.beginPath();
-				//for (var i = 0; i < datos.length; i++) {
-				//	contexto.arc(datos[i][1], datos[i][2], 5, 0, 2 * Math.PI);
-				//	contexto.fillStyle = "black";
-				//	contexto.fill();
-				//	contexto.closePath();
-				//}
 				// Gabri + Raul va a repasar la información de Salvador, y va a establecer grupos de puntos en base a un thresold
 				// Si radio = 5, el sistema debe detectar qué puntos estan mas cerca de 5, y dibujar un circulo conteniendolos
 				
 				//-----------------------------------------
 				//Busqueda de puntos por debajo del umbral
 				for (var i = 0; i < datos.length; i++) {
-					var punto1 = [datos[i][1], datos[i][2]];
-					console.log("bucle i, iteracion: " + i);
-					for (var j = 0; j < datos.length; j++) {
-						var punto2 = [datos[j][1], datos[j][2]];
-						console.log("bucle j, iteracion: " + j);
-						console.log("punto 1: " + punto1);
-						console.log("punto 2: " + punto2);
-						var distancia = distanciaPuntos(punto1, punto2);
-						console.log("distancia: " + distancia);
-						if (distancia <= umbral) {
-							console.log("Los puntos están cercanos");
-							// Calculamos los grupos a los que pertenecen los puntos
-							// En caso de no pertenecer a un grupo devolverá valor -1
-							var grupoPunto1 = calcularGrupoDePunto(punto1, puntosAgrupados);
-							console.log("grupoPunto1: " + grupoPunto1);
-							var grupoPunto2 = calcularGrupoDePunto(punto2, puntosAgrupados);
-							console.log("grupoPunto2: " + grupoPunto2);
-							/*if (grupoPunto1 != -1 && grupoPunto2 != -1 && grupoPunto1 < grupoPunto2) {
-								puntosAgrupados[i][3] = puntosAgrupados[j][3];
-							}*/
-							// Si el punto 1 pertenece a un grupo pero el punto 2 no, entonces insertamos el punto 2 en el grupo del punto 1
-							if (grupoPunto1 != -1 && grupoPunto2 == -1) {
-								console.log("***********************************ANYADO punto2: " + punto2 + " en el grupo del punto 1 " + punto1);
-								puntosAgrupados.push([datos[j][0], punto2[0], punto2[1], grupoPunto1]);
-							// Si el punto 2 pertenece a un grupo pero el punto 1 no, entonces insertamos el punto 1 en el grupo del punto 2
-							} else if (grupoPunto1 == -1 && grupoPunto2 != -1) {
-								console.log("***********************************ANYADO punto1: " + punto1 + " en el grupo del punto 2 " + punto2);
-								puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupoPunto2]);
-							// Si ninguno de los puntos pertenece a un grupo:
-							}/* else if (grupoPunto1 == -1 && grupoPunto2 == -1) {
-								// Miramos si el punto 1 o el punto 2 están cerca de algún punto:
-								var incluyo = 0;
-								for (k = 0; k < datos.length; k++) {
-									var punto3 = [datos[k][1], datos[k][2]];
-									var grupoPunto3 = calcularGrupoDePunto(punto3, puntosAgrupados);
-									// Si punto3 pertenece a un grupo:
-									if (grupoPunto3 != -1) {
-										console.log("hola");
-										console.log("punto3: ", punto3);
-										console.log("grupoPunto3: " + grupoPunto3);
-										var distancia1 = distanciaPuntos(punto1, punto3);
-										console.log("distancia1: " + distancia1);
-										var distancia2 = distanciaPuntos(punto2, punto3);
-										console.log("distancia2: " + distancia2);
-										if (distancia1 <= umbral) {
-											console.log("hola1");
-											var grupoPunto3 = calcularGrupoDePunto(punto3, puntosAgrupados);
-											puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupoPunto3]);
-											incluyo++;
-										}
-										if (distancia2 <= umbral) {
-											console.log("hola2");
-											var grupoPunto3 = calcularGrupoDePunto(punto3, puntosAgrupados);
-											puntosAgrupados.push([datos[i][0], punto2[0], punto2[1], grupoPunto3]);
-											incluyo++;
-										}
-									}
-								}
-								if (incluyo == 0) {
-									puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupo]);
-									puntosAgrupados.push([datos[j][0], punto2[0], punto2[1], grupo]);
-									grupo++;
-									console.log("grupo aumentado: " + grupo);
-									console.log("***********************************punto1: " + punto1);
-									console.log("***********************************punto2: " + punto2);
-								}
-							}*/
+					if (estados[i] === undefined) {
+						estados[i] = 0; //visitado y marcado como ruido por defecto
+						var vecinos = obtenerVecinos(i);
+						var numVecinos = vecinos.length;
+						if (numVecinos < minPts) {
+							estados[i] = 0; //ruido
+						} else {
+							grupos.push(new Array);
+							var indiceGrupo = grupos.length;
+							expandirGrupo(i, vecinos, indiceGrupo);
 						}
-					}
-					// Si el punto 1 no está cerca de ningún punto, entonces lo metemos en un grupo nuevo
-					if (calcularGrupoDePunto(punto1, puntosAgrupados) == -1) {
-						puntosAgrupados.push([datos[i][0], punto1[0], punto1[1], grupo]);
-						grupo++;
-						console.log("grupo aumentado: " + grupo);
 					}
 				}
 				
-				console.log("grupo: " + grupo);
-				console.log("puntos:", puntosAgrupados);
+				console.log("estados: ", estados);
+				console.log("grupos: ", grupos);
 				
 				//---------PINTADO DE LOS PUNTOS-----------
-				for (var i = 0; i < puntosAgrupados.length; i++) {
-					if (puntosAgrupados[i][3] == 0) {
-						console.log("negro");
-						contexto.fillStyle = "black";
-					} else if (puntosAgrupados[i][3] == 1) {
-						console.log("azul");
-						contexto.fillStyle = "blue";
-					} else if (puntosAgrupados[i][3] == 2) {
-						console.log("rojo");
-						contexto.fillStyle = "red";
+				for (var i = 0; i < grupos.length; i++) {
+					switch (i) {
+						case 0:
+							contexto.fillStyle = "black";
+							break;
+						case 1:
+							contexto.fillStyle = "blue";
+							break;
+						case 2:
+							contexto.fillStyle = "red";
+							break;
+						case 3:
+							contexto.fillStyle = "yellow";
+							break;
+						default:
 					}
-					contexto.beginPath();
-					contexto.arc(puntosAgrupados[i][1], puntosAgrupados[i][2], 5, 0, 2 * Math.PI);
-					contexto.closePath();
-					contexto.fill();
-					contexto.font = "10px Arial";
-					contexto.fillText(puntosAgrupados[i][1] + "," + puntosAgrupados[i][2], puntosAgrupados[i][1], puntosAgrupados[i][2] - 5);
+					for (var j = 0; j < grupos[i].length; j++) {
+						var indicePunto = grupos[i][j];
+						contexto.beginPath();
+						contexto.arc(datos[indicePunto][1], datos[indicePunto][2], 5, 0, 2 * Math.PI);
+						contexto.closePath();
+						contexto.fill();
+						contexto.font = "14px Arial";
+						contexto.fillText(datos[indicePunto][1] + "," + datos[indicePunto][2], datos[indicePunto][1], datos[indicePunto][2] - 5);
+					}
+					
+					
 				}
 				
 				
 				//--------Pintar círculos que agrupan---------------------
-				for (var i = 0; i < grupo; i++) {
-					console.log("iteracion " + i);
+				for (var i = 0; i < grupos.length; i++) {
 					var minPosX = -1;
 					var maxPosX = -1;
 					var minPosY = -1;
 					var maxPosY = -1;
 					// Sacar el valor mínimo y máximo de X e Y en el grupo en el que estemos:
-					for (var j = 0; j < puntosAgrupados.length; j++) {
-						// Comprobar que el punto pertenece al grupo en cuestión
-						if (puntosAgrupados[j][3] == i) {
-							// Sacar la componente X
-							if (minPosX == -1) {
-								minPosX = puntosAgrupados[j][1];
-							} else if (minPosX > puntosAgrupados[j][1]) {
-								minPosX = puntosAgrupados[j][1];
-							}
-							if (maxPosX == -1) {
-								maxPosX = puntosAgrupados[j][1];
-							} else if (maxPosX < puntosAgrupados[j][1]) {
-								maxPosX = puntosAgrupados[j][1];
-							}
-							// Sacar la componente Y
-							if (minPosY == -1) {
-								minPosY = puntosAgrupados[j][2];
-							} else if (minPosY > puntosAgrupados[j][2]) {
-								minPosY = puntosAgrupados[j][2];
-							}
-							if (maxPosY == -1) {
-								maxPosY = puntosAgrupados[j][2];
-							} else if (maxPosY < puntosAgrupados[j][2]) {
-								maxPosY = puntosAgrupados[j][2];
-							}
+					for (var j = 0; j < grupos[i].length; j++) {
+						var indice = grupos[i][j]; // saco el índice del punto del grupo
+						var posX = datos[indice][1] // posición X del punto actual
+						if (minPosX == -1 || minPosX > posX) {
+							minPosX = posX;
+						}
+						if (maxPosX == -1 || maxPosX < posX) {
+							maxPosX = posX;
+						}
+						var posY = datos[indice][2] // posición Y del punto actual
+						if (minPosY == -1 || minPosY > posY) {
+							minPosY = posY;
+						}
+						if (maxPosY == -1 || maxPosY < posY) {
+							maxPosY = posY;
 						}
 					}
+					
+					console.log("minPosX: " + minPosX);
+					console.log("maxPosX: " + maxPosX);
+					console.log("minPosY: " + minPosY);
+					console.log("maxPosY: " + maxPosY);
 					
 					// Calculamos el centro de la circunferencia
 					var centroCircunferencia = [minPosX + Math.round((maxPosX - minPosX) / 2), minPosY + Math.round((maxPosY - minPosY) / 2)];
@@ -1563,12 +1543,10 @@
 					
 					// Sacamos el punto más lejano del centro del grupo en el que estemos:
 					var distanciaMaxima = 0;
-					for (var j = 0; j < puntosAgrupados.length; j++) {
-						// Comprobar que el punto pertenece al grupo en cuestión
-						if (puntosAgrupados[j][3] == i) {
-							var distancia = distanciaPuntos(centroCircunferencia, [puntosAgrupados[j][1], puntosAgrupados[j][2]]);
-							distanciaMaxima = (distancia > distanciaMaxima) ? distancia : distanciaMaxima;
-						}
+					for (var j = 0; j < grupos[i].length; j++) {
+						var indice = grupos[i][j]; // saco el índice del punto del grupo
+						var distancia = distanciaPuntos(centroCircunferencia, [datos[indice][1], datos[indice][2]]);
+						distanciaMaxima = (distancia > distanciaMaxima) ? distancia : distanciaMaxima;
 					}
 					console.log("distanciaMaxima: " + distanciaMaxima);
 					
